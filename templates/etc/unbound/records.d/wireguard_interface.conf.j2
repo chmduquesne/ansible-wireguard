@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+# ipv4
+{% for record in wireguard_conf | dns_records(inventory_hostname, version=4) %}
+local-data: "{{ record.0 }}.{{wireguard_interface}} A {{ record.1 }}"
+local-data-ptr: "{{ record.1 }} {{ record.0 }}.{{ wireguard_interface }}"
+{% endfor %}
+# ipv6
+{% for record in wireguard_conf | dns_records(inventory_hostname, version=6) %}
+local-data: "{{ record.0 }}.{{wireguard_interface}} AAAA {{ record.1 }}"
+local-data-ptr: "{{ record.1 }} {{ record.0 }}.{{ wireguard_interface }}"
+{% endfor %}

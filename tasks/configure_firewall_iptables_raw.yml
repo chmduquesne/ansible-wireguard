@@ -1,0 +1,57 @@
+---
+
+- name: accept wireguard connections
+  iptables_raw:
+    name: "{{ wireguard_interface }}_protocol"
+    rules: "-A INPUT -p udp -m udp --dport {{ wireguard_conf.listenport }} -m conntrack --ctstate NEW -j ACCEPT"
+    ipversion: "{{ item }}"
+  with_items:
+    - 4
+    - 6
+  when: ('listenport' in wireguard_conf)
+
+- name: allow forwarding of packets that stay in the tunnel
+  iptables_raw:
+    name: "{{ wireguard_interface }}_to_{{ wireguard_interface }}"
+    rules: "-A FORWARD -i {{ wireguard_interface }} -o {{ wireguard_interface }} -m conntrack --ctstate NEW -j ACCEPT"
+    ipversion: "{{ item }}"
+  with_items:
+    - 4
+    - 6
+  when: ('out_gw' in wireguard_conf)
+
+- name: allow forwarding of packets from peers to the Internet
+  iptables_raw:
+    name: "{{ wireguard_interface }}_to_{{ wireguard_conf.out_gw }}"
+    rules: "-A FORWARD -i {{ wireguard_interface }} -o {{ wireguard_conf.out_gw }} -m conntrack --ctstate NEW -j ACCEPT"
+    ipversion: "{{ item }}"
+  with_items:
+    - 4
+    - 6
+  when: ('out_gw' in wireguard_conf)
+
+- name: masquerade v4 packets to the out interface
+  iptables_raw:
+    name: "{{ wireguard_interface }}_masquerade"
+    table: nat
+    rules: "-A POSTROUTING -o {{ wireguard_conf.out_gw }} -j MASQUERADE"
+    ipversion: 4
+  when: ('out_gw' in wireguard_conf)
+
+- name: allow wifi traffic to be forwarded to wireguard
+  iptables_raw:
+    name: "{{ wireguard_interface }}_wifi_to_vpn"
+    rules: "-A FORWARD -i {{ wireguard_conf.in_gw }} -o {{ wireguard_interface }} -m conntrack --ctstate NEW -j ACCEPT"
+    ipversion: "{{ item }}"
+  with_items:
+    - 4
+    - 6
+  when: ('in_gw' in wireguard_conf)
+
+- name: masquerade v4 packets to wireguard
+  iptables_raw:
+    name: "{{ wireguard_interface }}_masquerade_wifi"
+    table: nat
+    rules: "-A POSTROUTING -o {{ wireguard_interface }} -j MASQUERADE"
+    ipversion: 4
+  when: ('in_gw' in wireguard_conf)

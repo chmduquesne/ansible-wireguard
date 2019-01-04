@@ -1,0 +1,17 @@
+---
+- name: update apt pin preferences
+  copy:
+    src: files/etc/apt/preferences.d/limit-unstable
+    dest: /etc/apt/preferences.d/limit-unstable
+    owner: root
+    group: root
+    mode: 0644
+
+- name: add unstable repo
+  apt_repository:
+    repo: deb http://deb.debian.org/debian/ unstable main
+    filename: unstable-wireguard
+    state: present
+
+- name: get latest wireguard
+  package: name=wireguard state=latest

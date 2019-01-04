@@ -1,0 +1,42 @@
+---
+
+- name: "collect the private key of {{ peername }}"
+  set_fact:
+    wireguard_mobile_privkey: "{{ wireguard[wireguard_interface].peers[peername].privkey | default('<your private key here>') }}"
+
+- name: "adjusting {{ peername }} config variables"
+  set_fact:
+    wireguard_mobile_conf: "{{ wireguard[wireguard_interface]|combine({'privkey': wireguard_mobile_privkey})|auto_assign_ips(peername)|remove_peer(peername) }}"
+    wireguard_mobile_conf_clean: {}
+
+- name: "removing the fields that are irrelevant for mobile devices"
+  set_fact:
+    wireguard_mobile_conf_clean: "{{ wireguard_mobile_conf|combine({item.key: item.value}) }}"
+  with_dict: "{{ wireguard_mobile_conf }}"
+  when: (item.key not in ('listenport', 'table', 'preup', 'postup', 'predown', 'postdown'))
+
+- name: "adding user configured mobile fields"
+  set_fact:
+    wireguard_mobile_conf: "{{ wireguard_mobile_conf_clean|combine(wireguard_mobile_parameters[wireguard_interface]|default(dict())) }}"
+
+- name: setting file name
+  set_fact:
+    wireguard_template_dest: "{{ wireguard_mobile_conf_dir }}/{{ wireguard_interface }}.{{ peername }}.conf"
+
+- name: "saving old conf"
+  set_fact:
+    wireguard_old_conf: "{{ wireguard_conf }}"
+    wireguard_conf: "{{ wireguard_mobile_conf }}"
+
+- name: "create {{ peername }} config"
+  template:
+    src: templates/etc/wireguard/wireguard_interface.conf.j2
+    dest: "{{ wireguard_template_dest }}"
+  delegate_to: 127.0.0.1
+  become: false
+  vars:
+    - wireguard_conf: wireguard_mobile_conf
+
+- name: "restoring old conf"
+  set_fact:
+    wireguard_conf: "{{ wireguard_old_conf }}"

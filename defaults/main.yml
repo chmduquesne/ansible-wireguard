@@ -1,0 +1,6 @@
+---
+wireguard_mobile_conf_dir: "."
+wireguard_generate_mobile: False
+wireguard_unbound_records_dir: "/etc/unbound/records.d"
+wireguard_mobile_parameters: {}
+wireguard_iptable_module: none

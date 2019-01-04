@@ -1,0 +1,18 @@
+---
+- name: ensure unbound custom records directory exists
+  file:
+    path: "{{ wireguard_unbound_records_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: create the unbound records file
+  template:
+    src: templates/etc/unbound/records.d/wireguard_interface.conf.j2
+    dest: "{{ wireguard_unbound_records_dir }}/{{ wireguard_interface }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart unbound

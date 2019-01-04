@@ -1,0 +1,59 @@
+#jinja2: lstrip_blocks: True
+# {{ ansible_managed }}
+{% if wireguard_template_dest is defined %}
+
+# Use this configuration on a mobile device:
+# qrencode -o- < {{ wireguard_template_dest | basename }} | display
+{% endif %}
+
+[Interface]
+PrivateKey = {{ wireguard_conf.privkey }}
+{% if 'listenport' in wireguard_conf and wireguard_conf.listenport %}
+ListenPort = {{ wireguard_conf.listenport }}
+{% endif %}
+{% if 'address' in wireguard_conf and wireguard_conf.address %}
+Address = {{ wireguard_conf.address | join(', ')}}
+{% endif %}
+{% if 'mtu' in wireguard_conf and wireguard_conf.mtu %}
+MTU = {{ wireguard_conf.mtu }}
+{% endif %}
+{% if 'dns' in wireguard_conf and wireguard_conf.dns %}
+DNS = {{ wireguard_conf.dns }}
+{% endif %}
+{% if 'table' in wireguard_conf and wireguard_conf.table %}
+Table = {{ wireguard_conf.table }}
+{% endif %}
+{% if 'preup' in wireguard_conf and wireguard_conf.preup %}
+{% for cmd in wireguard_conf.preup %}
+PreUp = {{ cmd }}
+{% endfor %}
+{% endif %}
+{% if 'postup' in wireguard_conf and wireguard_conf.postup %}
+{% for cmd in wireguard_conf.postup %}
+PostUp = {{ cmd }}
+{% endfor %}
+{% endif %}
+{% if 'predown' in wireguard_conf and wireguard_conf.predown %}
+{% for cmd in wireguard_conf.predown %}
+PreDown = {{ cmd }}
+{% endfor %}
+{% endif %}
+{% if 'postdown' in wireguard_conf and wireguard_conf.postdown %}
+{% for cmd in wireguard_conf.postdown %}
+PostDown = {{ cmd }}
+{% endfor %}
+{% endif %}
+{% for hostname, peervars in wireguard_conf.peers | dictsort %}
+
+[Peer]
+PublicKey = {{ peervars.pubkey }}
+    {% if 'allowedips' in peervars and peervars.allowedips %}
+AllowedIPs = {{ peervars.allowedips | join(', ') }}
+    {% endif %}
+    {% if 'endpoint' in peervars and peervars.endpoint %}
+Endpoint = {{ peervars.endpoint }}
+    {% endif %}
+    {% if 'persistentkeepalive' in peervars and peervars.persistentkeepalive %}
+PersistentKeepalive = {{ peervars.persistentkeepalive }}
+    {% endif %}
+{% endfor %}
