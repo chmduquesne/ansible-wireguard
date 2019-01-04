@@ -59,7 +59,7 @@ Required:
 
 Optional:
 
-* `wireguard.wg0.peers.machine0.privkey`, accepts a string. (only useful in combination with `wireguard_generate_mobile`) If `machine0` is mobile, private key to use in the configuration generation.
+* `wireguard.wg0.peers.machine0.privkey`, accepts a string. (only useful in combination with `wireguard_generate_mobile`) If `machine0` is mobile, private key to use in the configuration generation. If not provided, a placeholder will be used.
 * `wireguard.wg0.peers.machine0.allowedips`, accepts a list of ip ranges. AllowedIPs to use for `machine0`.
 * `wireguard.wg0.peers.machine0.mobile`, default: False, accepts a boolean. Whether to generate a configuration for `machine0` when `wireguard_generate_mobile` is true.
 
@@ -70,11 +70,88 @@ firewall configuration.
 
 # Example Playbook
 
-TODO
+Here is an example playbook:
 
-    - hosts: servers
+    - hosts: wireguard
       roles:
-         - { role: username.rolename, x: 42 }
+         - role: chmduquesne.ansible_wireguard
+
+Typically, to avoid repeating yourself, you should use the `|combine` filter extensively. For example, you could have the following `group_vars/all/vars.yml`:
+
+    wireguard_iptable_module: "iptables_raw"
+    
+    wireguard_default:
+      wg0:
+        mtu: 1280
+        dns: "{{ vault_wg0_dns }}"
+        peers:
+          # we use machine0 as an exit gateway
+          machine0:
+            pubkey: "{{ vault_wg0_machine0_pubkey }}"
+            endpoint: "{{ vault_wg0_machine0_endpoint }}"
+            allowedips:
+              - "0.0.0.0/0"
+              - "::/0"
+            persistentkeepalive: 20
+          # machine1 could be an entry gateway
+          machine1:
+            pubkey: "{{ vault_wg0_machine1_pubkey }}"
+            allowedips:
+              - "{{ vault_wg0_machine1_inet6_range }}"
+          # machine2 and machine3 are mobile peers, not configured with ansible
+          machine2:
+            pubkey: "{{ vault_wg0_machine2_pubkey }}"
+            privkey: "{{ vault_wg0_machine2_privkey }}"
+            mobile: true
+          machine3:
+            pubkey: "{{ vault_wg0_machine3_pubkey }}"
+            privkey: "{{ vault_wg0_machine3_privkey }}"
+            mobile: true
+          # machine4 is a regular peer
+          machine4:
+            pubkey: "{{ vault_wg0_machine4_pubkey }}"
+        auto_assign_ips:
+          - 10.0.0.0/8
+          - fd1a:6126:2887::/48
+          - "{{ vault_wg0_global_inet6_range }}"
+
+Then, for `host_vars/machine0/vars.yml`:
+
+    wireguard_override:
+      wg0:
+        privkey: "{{ vault_wg0_privkey }}"
+        listenport: 500
+        out_gw: enp0s20
+        unbound_records: True
+        dns: False
+    wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
+    
+    wireguard_generate_mobile: true
+    wireguard_mobile_conf_dir: "wg_configs"
+    wireguard_mobile_parameters:
+      wg0:
+        dns: "{{ wireguard_default.wg0.dns }}"
+
+Then, for `host_vars/machine1/vars.yml`:
+
+    wireguard_override:
+      wg0:
+        privkey: "{{ vault_wg0_privkey }}"
+        in_gw: wlan0
+        dns: False
+        # Generate an uint32 from the interface name
+        table: "{{ 'wg0'|checksum|truncate(4, end='')|int(base=16) }}"
+    wireguard: "{{ wireguard_default|combine(wireguard_override, recursive=True) }}"
+
+And for `host_vars/machine4/vars.yml`:
+
+    wireguard_override:
+      wg0:
+        privkey: "{{ vault_wg0_privkey }}"
+    wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
+
+`machine2` and `machine3` are not managed by ansible, and therefore they
+do not require `host_vars` configuration.
 
 # License
 
