@@ -1,0 +1,40 @@
+---
+
+- name: expand the configuration
+  set_fact:
+    wireguard_conf: "{{ wireguard[wireguard_interface]|auto_assign_ips(inventory_hostname)|remove_peer(inventory_hostname) }}"
+
+- name: create config file
+  template:
+    src: templates/etc/wireguard/wireguard_interface.conf.j2
+    dest: "/etc/wireguard/{{ wireguard_interface }}.conf"
+    owner: root
+    group: root
+    mode: 0600
+
+- name: enable wg-quick
+  systemd:
+    name: "wg-quick@{{ wireguard_interface }}"
+    enabled: yes
+
+- name: enable ip forwarding
+  sysctl: name={{ item }} value=1
+  with_items:
+    - net.ipv6.conf.all.forwarding
+    - net.ipv6.conf.default.forwarding
+    - net.ipv4.ip_forward
+  when: (('in_gw' in wireguard_conf) or ('out_gw' in wireguard_conf))
+
+- name: configure firewall
+  include_tasks: "configure_firewall_{{ wireguard_iptable_module }}.yml"
+
+- name: configure unbound records
+  include_tasks: configure_unbound_records.yml
+  when: wireguard_conf.unbound_records|default(false)
+
+- name: create mobile config
+  include_tasks: configure_mobile.yml
+  with_items: "{{ wireguard_conf.peers.keys()|list|sort }}"
+  loop_control:
+    loop_var: peername
+  when: wireguard_generate_mobile and wireguard[wireguard_interface].peers[peername].mobile|default(False)
