@@ -1,0 +1,13 @@
+---
+- name: get software-properties-common
+  package: name=software-properties-common state=present
+
+- name: add wireguard ppa
+  apt_repository:
+    repo: ppa:wireguard/wireguard
+
+- name: install wireguard packages
+  package: name={{ item }} state=present
+  with_items:
+    - wireguard-dkms
+    - wireguard-tools

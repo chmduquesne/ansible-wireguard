@@ -2,6 +2,7 @@
 - name: install wireguard
   include_tasks: "{{ install_wireguard }}"
   with_first_found:
+    - "install_{{ ansible_distribution }}_{{ ansible_machine }}.yml"
     - "install_{{ ansible_os_family }}_{{ ansible_machine }}.yml"
     - install_default.yml
   loop_control:
