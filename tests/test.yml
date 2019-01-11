@@ -1,5 +1,29 @@
 ---
 - hosts: localhost
-  remote_user: root
+  connection: local
+  become: true
   roles:
-    - wireguard
+    - ../../
+  vars:
+    wireguard:
+      wg0:
+        privkey: wLXOaORnRgTiA8aKfQ8CIocJxYu0Mzh+msJ9QCWpEVg=
+        listenport: 500
+        out_gw: eth0
+        unbound_records: True
+        peers:
+          localhost:
+            pubkey: 3pEpy4XD+pItVLzmrGR4KC7vyObWm3HqqBvt6O23FWw=
+            endpoint: 127.0.0.1:500
+            allowedips:
+              - "0.0.0.0/0"
+              - "::/0"
+          mobile:
+            pubkey: e/IhhWHzEQ6reAjAr8R+tZ2E3Se8nFaeNEv+fkoZJUU=
+            privkey: sMXCW/HyWdyQTkFgRs6/PkOk7qOyu2eccNnEFBO57WQ=
+            mobile: true
+    wireguard_generate_mobile: true
+    wireguard_mobile_parameters:
+      wg0:
+        dns:
+          1.1.1.1
