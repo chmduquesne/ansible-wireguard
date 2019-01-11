@@ -140,7 +140,9 @@ def dns_records(config, hostname, version=4):
     if pubkey:
         res += [[hostname, gen_ip(pubkey, subnet=subnet)]]
 
-    for peername, peervars in config.get('peers', dict()).items():
+    peers = config.get('peers', dict())
+    for peername in sorted(list(peers.keys())):
+        peervars = peers[peername]
         res += [[peername, gen_ip(peervars['pubkey'], subnet=subnet)]]
 
     return res
