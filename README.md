@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/chmduquesne/ansible-wireguard.svg?branch=master)](https://travis-ci.org/chmduquesne/ansible-wireguard)
+[![Ansible Galaxy](http://img.shields.io/badge/ansible--galaxy-chmduquesne.wireguard-blue.svg)](https://galaxy.ansible.com/chmduquesne/wireguard/)
+
 wireguard
 =========
 
