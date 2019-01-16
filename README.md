@@ -25,45 +25,45 @@ Optional:
 
 ## Wireguard
 
-* `wireguard.wg0` accepts: a dictionary formatted as described below. How to configure the interface `wg0`.
+* `wireguard.{interface}` accepts: a dictionary formatted as described below. How to configure the interface `{interface}`.
 
 ### Wireguard interface
 
 Required wireguard variables:
 
-* `wireguard.wg0.privkey`, accepts a string. Private key to use for `wg0`.
+* `wireguard.{interface}.privkey`, accepts a string. Private key to use for `wg0`.
 
 Optional wireguard variables:
 
-* `wireguard.wg0.pubkey` accepts a string. Public key to use for `wg0` (only useful in combination with `auto_assign_ips`).
-* `wireguard.wg0.listenport` accepts a port number. Port to use for the `wg0`.
-* `wireguard.wg0.dns`, accepts an ip address or a hostname. DNS server to use for `wg0`.
-* `wireguard.wg0.peers`, accepts a peer dictionary formatted as described below. Peer parameters. If `{{ inventory_hostname }}` appears in the peers section, it will be skipped.
-* `wireguard.wg0.mtu`, accepts an int. MTU to use for `wg0`
-* `wireguard.wg0.address`, accepts a list of ip addresses. Addresses to assign to `wg0`.
+* `wireguard.{interface}.pubkey` accepts a string. Public key to use for the interface (only useful in combination with `auto_assign_ips`).
+* `wireguard.{interface}.listenport` accepts a port number. Port to use for the interface.
+* `wireguard.{interface}.dns`, accepts an ip address or a hostname. DNS server to use for the interface.
+* `wireguard.{interface}.peers`, accepts a peer dictionary formatted as described below. Peer parameters. If `{{ inventory_hostname }}` appears in the peers section, it will be skipped.
+* `wireguard.{interface}.mtu`, accepts an int. MTU to use for the interface
+* `wireguard.{interface}.address`, accepts a list of ip addresses. Addresses to assign to the interface.
 
 Convenience variables:
 
-* `wireguard.wg0.auto_assign_ips` accepts a list of ip ranges. For each range and for each peer, an ip address is derived from the pubkey within the range, and is assigned as an additional allowedips. For the target host, the generated ip address is appended to `wireguard.wg0.address`.
-* `wireguard.wg0.out_gw` accepts an interface name. If `{{ wireguard_iptable_module }}` is not `'none'`, the firewall will be configured to accept forwarding packets from `wg0` to this interface.
-* `wireguard.wg0.in_gw` accepts an interface name. If `{{ wireguard_iptable_module }}` is not `'none'`, the firewall will be configured to accept forwarding packets from this interface to `wg0`.
-* `wireguard.wg0.unbound_records` default: `False`, accepts a bool. If `wireguard.wg0.auto_assign_ips` is not empty, dns records will be generated for each peer in a format understood by unbound.
+* `wireguard.{interface}.auto_assign_ips` accepts a list of ip ranges. For each range and for each peer, an ip address is derived from the pubkey within the range, and is assigned as an additional allowedips. For the target host, the generated ip address is appended to `wireguard.{interface}.address`.
+* `wireguard.{interface}.out_gw` accepts an interface name. If `{{ wireguard_iptable_module }}` is not `'none'`, the firewall will be configured to accept forwarding packets from `{interface}` to `wireguard.{interface}.out_gw`.
+* `wireguard.{interface}.in_gw` accepts an interface name. If `{{ wireguard_iptable_module }}` is not `'none'`, the firewall will be configured to accept forwarding packets from `wireguard.{interface}.in_gw` to `{interface}`.
+* `wireguard.{interface}.unbound_records` default: `False`, accepts a bool. If `wireguard.{interface}.auto_assign_ips` is not empty, dns records will be generated for each peer in a format understood by unbound.
 
 #### Wireguard interface peers
 
-* `wireguard.wg0.peers.machine0`, accepts a dictionary as described below. How to configure the peer `machine0`.
+* `wireguard.{interface}.peers.{peername}`, accepts a dictionary as described below. How to configure the peer `machine0`.
 
 #### Wireguard interface peer parameters
 
 Required:
 
-* `wireguard.wg0.peers.machine0.pubkey`, accepts a string. Public key to use for `machine0`.
+* `wireguard.{interface}.peers.{peername}.pubkey`, accepts a string. Public key to use for `machine0`.
 
 Optional:
 
-* `wireguard.wg0.peers.machine0.privkey`, accepts a string. (only useful in combination with `wireguard_generate_mobile`) If `machine0` is mobile, private key to use in the configuration generation. If not provided, a placeholder will be used.
-* `wireguard.wg0.peers.machine0.allowedips`, accepts a list of ip ranges. AllowedIPs to use for `machine0`.
-* `wireguard.wg0.peers.machine0.mobile`, default: False, accepts a boolean. Whether to generate a configuration for `machine0` when `wireguard_generate_mobile` is true.
+* `wireguard.{interface}.peers.{peername}.privkey`, accepts a string. (only useful in combination with `wireguard_generate_mobile`) If `{peername}` is mobile, private key to use in the configuration generation. If not provided, a placeholder will be used.
+* `wireguard.{interface}.peers.{peername}.allowedips`, accepts a list of ip ranges. AllowedIPs to use for `{peername}`.
+* `wireguard.{interface}.peers.{peername}.mobile`, default: False, accepts a boolean. Whether to generate a configuration for `{peername}` when `wireguard_generate_mobile` is true.
 
 # Dependencies
 
@@ -76,7 +76,7 @@ Here is an example playbook:
 
     - hosts: wireguard
       roles:
-         - role: chmduquesne.ansible_wireguard
+         - role: chmduquesne.wireguard
 
 Typically, to avoid repeating yourself, you should use the `|combine` filter extensively. For example, you could have the following `group_vars/all/vars.yml`:
 
