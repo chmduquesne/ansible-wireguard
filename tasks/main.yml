@@ -8,6 +8,14 @@
   loop_control:
     loop_var: install_wireguard
 
+- name: create wireguard directory if necessary
+  file:
+    path: /etc/wireguard
+    state: directory
+    owner: root
+    group: root
+    mode: 700
+
 - name: configure networks
   include_tasks: configure_wireguard_interface.yml
   with_items: "{{ wireguard.keys()|list|sort }}"
