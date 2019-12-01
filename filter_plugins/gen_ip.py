@@ -19,9 +19,16 @@ def sha256(s):
 def gen_ip(s, subnet='2001:db8::/48', with_prefixlen=False,
         with_maxprefixlen=False):
     """
-    - Hash the input
-    - Take the first bytes of the result
-    - Mask those bytes with the input subnet
+    This filter expects a string input (normally a wireguard public key)
+    and turns it into an ip address.
+
+    The process of turning the input string into this ip address happens
+    in 3 steps:
+    1. Compute the sha256sum of the input
+    2. Select the first n bytes of the resulting sum (n=4 for ipv4, n=16
+       for ipv6 - this depends on the subnet argument)
+    3. Mask the resulting ip address with the subnet, so that the
+       resulting ip address is whithin that subnet
     """
     if sys.version_info.major < 3:
         subnet = unicode(subnet)
