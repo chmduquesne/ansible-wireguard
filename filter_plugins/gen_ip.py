@@ -93,7 +93,7 @@ def auto_assign_ips(config, hostname):
     c = copy.deepcopy(config)
 
     # If there is no ip to assign, return immediately
-    subnets = c.get('auto_assign_ips', [])
+    subnets = c.get('auto_assign_ranges', [])
     if not subnets:
         return c
 
@@ -139,7 +139,7 @@ def first_subnet(subnets, version=4):
 def dns_records(config, hostname, version=4):
     res = []
 
-    subnet = first_subnet(config.get('auto_assign_ips', []), version=version)
+    subnet = first_subnet(config.get('auto_assign_ranges', []), version=version)
     if not subnet:
         return []
 
