@@ -14,7 +14,7 @@
     state: directory
     owner: root
     group: root
-    mode: 700
+    mode: '0700'
 
 - name: configure networks
   include_tasks: configure_wireguard_interface.yml
