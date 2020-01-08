@@ -1,36 +1,34 @@
 ---
-- name: install the packages required to compile wireguard
+- name: Install the packages required for building wireguard
   package: name={{ item }} state=latest
   with_items:
-    - libmnl-dev
-    - libelf-dev
     - raspberrypi-kernel-headers
-    - build-essential
-    - git
+    - dirmngr
 
-- name: clone wireguard
-  git:
-    repo: https://git.zx2c4.com/WireGuard
-    dest: WireGuard
-  register: git_repo
-  become: false
+- name: update apt pin preferences
+  copy:
+    src: files/etc/apt/preferences.d/limit-unstable
+    dest: /etc/apt/preferences.d/limit-unstable
+    owner: root
+    group: root
+    mode: 0644
 
-- name: build wireguard
-  command: make
-  args:
-    chdir: WireGuard/src
-  become: false
-  when: git_repo.before != git_repo.after
+- name: Add the debian signing keys
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: "{{ item }}"
+  with_items:
+    - 648ACFD622F3D138
+    - 04EE7237B7D453EC
 
-- name: install wireguard
-  command: make install
-  args:
-    chdir: WireGuard/src
-  become: true
-  when: git_repo.before != git_repo.after
+- name: add unstable repo
+  apt_repository:
+    repo: deb http://deb.debian.org/debian/ unstable main
+    filename: unstable-wireguard
+    state: present
 
-- name: load wireguard kernel module
-  modprobe: name=wireguard state=present
+- name: get latest wireguard
+  package: name=wireguard state=latest
 
 - name: load wireguard kernel module automatically at boot
   copy:
