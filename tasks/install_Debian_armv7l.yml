@@ -29,10 +29,3 @@
 
 - name: get latest wireguard
   package: name=wireguard state=latest
-
-- name: load wireguard kernel module automatically at boot
-  copy:
-    dest: /etc/modules-load.d/wireguard.conf
-    content: |
-      # ansible managed
-      wireguard

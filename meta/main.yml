@@ -7,14 +7,7 @@ galaxy_info:
   platforms:
     - name: Debian
       versions:
-        - stretch
-    - name: Ubuntu
-      versions:
-        - xenial
-        - bionic
-    - name: CentOS
-      versions:
-        - 7
+        - buster
   galaxy_tags:
   - security
   - networking
