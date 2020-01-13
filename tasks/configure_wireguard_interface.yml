@@ -1,8 +1,16 @@
 ---
+# This task is looped on from tasks/main.yml and the variable
+# wireguard_interface represents the wireguard interface being configured
+# (e.g. wg0, wg1).
 
 - name: expand the configuration
   set_fact:
-    wireguard_conf: "{{ wireguard[wireguard_interface]|auto_assign_ips(inventory_hostname)|remove_peer(inventory_hostname) }}"
+    wireguard_conf: >
+      {{
+        wireguard[wireguard_interface]      |
+        auto_assign_ips(inventory_hostname) |
+        remove_peer(inventory_hostname)
+      }}
 
 - name: create config file
   template:
@@ -37,4 +45,6 @@
   with_items: "{{ wireguard_conf.peers.keys()|list|sort }}"
   loop_control:
     loop_var: peername
-  when: wireguard_generate_mobile and wireguard[wireguard_interface].peers[peername].mobile|default(False)
+  when: >
+    wireguard_generate_mobile and
+    wireguard[wireguard_interface].peers[peername].mobile|default(False)
