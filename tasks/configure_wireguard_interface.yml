@@ -7,9 +7,9 @@
   set_fact:
     wireguard_conf: >
       {{
-        wireguard[wireguard_interface]      |
-        auto_assign_ips(inventory_hostname) |
-        remove_peer(inventory_hostname)
+        wireguard[wireguard_interface] |
+        auto_assign_ips                |
+        remove_self
       }}
 
 - name: create config file

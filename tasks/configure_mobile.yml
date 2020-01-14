@@ -10,22 +10,48 @@
 
 - name: "collect the private key of {{ peername }}"
   set_fact:
-    wireguard_mobile_privkey: "{{ wireguard[wireguard_interface].peers[peername].privkey | default('<your private key here>') }}"
+    wireguard_mobile_privkey: >
+      {{
+        wireguard[wireguard_interface].peers[peername].privkey |
+        default('<your private key here>')
+      }}
 
 - name: "adjusting {{ peername }} config variables"
   set_fact:
-    wireguard_mobile_conf: "{{ wireguard[wireguard_interface]|combine({'privkey': wireguard_mobile_privkey})|auto_assign_ips(peername)|remove_peer(peername) }}"
+    wireguard_mobile_conf: >
+      {{
+        wireguard[wireguard_interface]                 |
+        combine({'privkey': wireguard_mobile_privkey}) |
+        auto_assign_ips                                |
+        remove_self
+      }}
     wireguard_mobile_conf_clean: {}
 
 - name: "removing the fields that are irrelevant for mobile devices"
   set_fact:
-    wireguard_mobile_conf_clean: "{{ wireguard_mobile_conf|combine({item.key: item.value}) }}"
+    wireguard_mobile_conf_clean: >
+      {{
+        wireguard_mobile_conf          |
+        combine({item.key: item.value})
+      }}
   with_dict: "{{ wireguard_mobile_conf }}"
-  when: (item.key not in ('listenport', 'table', 'preup', 'postup', 'predown', 'postdown'))
+  when: >
+    item.key not in (
+      'listenport',
+      'table',
+      'preup',
+      'postup',
+      'predown',
+      'postdown'
+      )
 
 - name: "adding user configured mobile fields"
   set_fact:
-    wireguard_mobile_conf: "{{ wireguard_mobile_conf_clean|combine(wireguard_mobile_parameters[wireguard_interface]|default(dict())) }}"
+    wireguard_mobile_conf: >
+      {{
+        wireguard_mobile_conf_clean |
+        combine(wireguard_mobile_parameters[wireguard_interface] | default({}))
+      }}
 
 - name: setting file name
   set_fact:

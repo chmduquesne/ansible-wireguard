@@ -10,10 +10,18 @@ import hashlib
 import sys
 import json
 import copy
+import nacl.utils
+from nacl.public import PrivateKey, Box
 
 
 def sha256(s):
     return hashlib.sha256(s.encode()).digest()
+
+
+def wg_pubkey(s):
+    encoder = nacl.encoding.Base64Encoder
+    key = nacl.public.PrivateKey(s, encoder)
+    return to_text(encoder.encode(bytes(key.public_key)))
 
 
 def gen_ip(s, subnet='2001:db8::/48', with_prefixlen=False,
@@ -63,32 +71,28 @@ def gen_ip(s, subnet='2001:db8::/48', with_prefixlen=False,
     return to_text(res)
 
 
-def remove_peer(config, peername):
+def remove_self(config):
     """
-    Remove the given peer from the peers dictionary
+    Self-remove from the peers dictionary
     """
     c = dict(config)
-    peers = dict(c['peers'])
-    if peername in peers:
-        del peers[peername]
+    pubkey = get_pubkey(c)
+    peers = {k: v for k, v in c['peers'].items() if v["pubkey"] != pubkey}
     c['peers'] = peers
     return c
 
 
-def get_pubkey(config, hostname):
+def get_pubkey(config):
     """
     Return the public key of the hostname
     """
     res = None
     if 'pubkey' in config:
-        res = config['pubkey']
-    else:
-        if hostname in config['peers']:
-            res = config['peers'][hostname]['pubkey']
-    return res
+        return config['pubkey']
+    return wg_pubkey(config['privkey'])
 
 
-def auto_assign_ips(config, hostname):
+def auto_assign_ips(config):
     # Make a copy of the config that we can safely modify
     c = copy.deepcopy(config)
 
@@ -98,10 +102,7 @@ def auto_assign_ips(config, hostname):
         return c
 
     # Assign an ip to the host
-    pubkey = get_pubkey(c, hostname)
-    if not pubkey:
-        raise AnsibleFilterError(
-                '|auto_assign_ips: "%s": pubkey missing' % hostname)
+    pubkey = get_pubkey(c)
     address = c.get('address', [])
     if not isinstance(address, list):
         raise AnsibleFilterError(
@@ -143,9 +144,10 @@ def dns_records(config, hostname, version=4):
     if not subnet:
         return []
 
-    pubkey = get_pubkey(config, hostname)
-    if pubkey:
-        res += [[hostname, gen_ip(pubkey, subnet=subnet)]]
+    #Not needed?
+    #pubkey = get_pubkey(config)
+    #if pubkey:
+    #    res += [[hostname, gen_ip(pubkey, subnet=subnet)]]
 
     peers = config.get('peers', dict())
     for peername in sorted(list(peers.keys())):
@@ -164,6 +166,6 @@ class FilterModule(object):
         return {
             'gen_ip': gen_ip,
             'auto_assign_ips': auto_assign_ips,
-            'remove_peer': remove_peer,
+            'remove_self': remove_self,
             'dns_records': dns_records,
         }
