@@ -4,6 +4,10 @@ services: docker
 env:
   - distro: debian9
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get -y install python3-nacl
+
 script:
   # Download test shim.
   - wget -O ${PWD}/tests/test.sh https://gist.githubusercontent.com/geerlingguy/73ef1e5ee45d8694570f334be385e181/raw/
