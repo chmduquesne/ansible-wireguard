@@ -36,7 +36,7 @@ def gen_ip(s, subnet='2001:db8::/48', with_prefixlen=False,
     2. Select the first n bytes of the resulting sum (n=4 for ipv4, n=16
        for ipv6 - this depends on the subnet argument)
     3. Mask the resulting ip address with the subnet, so that the
-       resulting ip address is whithin that subnet
+       resulting ip address is within that subnet
     """
     if sys.version_info.major < 3:
         subnet = unicode(subnet)
@@ -84,7 +84,7 @@ def remove_self(config):
 
 def get_pubkey(config):
     """
-    Return the public key of the hostname
+    Return the public key at the root of the config
     """
     res = None
     if 'pubkey' in config:
@@ -129,6 +129,14 @@ def auto_assign_ips(config):
     return c
 
 
+def keep_keys(d, keys):
+    """
+    Filter a dictionary by keeping some keys
+    """
+    return {k: v for k, v in d.items() if k in keys}
+
+
+
 def first_subnet(subnets, version=4):
     for subnet in subnets:
         network = ipaddress.ip_network(subnet)
@@ -168,4 +176,5 @@ class FilterModule(object):
             'auto_assign_ips': auto_assign_ips,
             'remove_self': remove_self,
             'dns_records': dns_records,
+            'keep_keys': keep_keys,
         }

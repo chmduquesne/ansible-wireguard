@@ -30,8 +30,7 @@
           })                                                 |
         auto_assign_ips                                      |
         remove_self                                          |
-        dict2items                                           |
-        selectattr("key", 'in',
+        keep_keys(
           [
             'listenport',
             'table',
@@ -40,8 +39,6 @@
             'predown',
             'postdown'
           ])                                                 |
-        list                                                 |
-        items2dict                                           |
         combine(
           wireguard_mobile_parameters[wireguard_interface] |
           default({})
