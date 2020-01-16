@@ -2,8 +2,7 @@
 services: docker
 
 env:
-  - distro: debian9
-  - packages: python3-nacl
+  - distro=debian9 packages=python3-nacl
 
 script:
   # Download test shim.
