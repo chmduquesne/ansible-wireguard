@@ -3,14 +3,11 @@ services: docker
 
 env:
   - distro: debian9
-
-before_install:
-  - sudo apt-get update
-  - sudo apt-get -y install python3-nacl
+  - packages: python3-nacl
 
 script:
   # Download test shim.
-  - wget -O ${PWD}/tests/test.sh https://gist.githubusercontent.com/geerlingguy/73ef1e5ee45d8694570f334be385e181/raw/
+  - wget -O ${PWD}/tests/test.sh https://gist.githubusercontent.com/chmduquesne/260d75a7e81e5b12e8c9da37e065904e/raw/e36ea95a55a3ffe1e66eba689aa5fea1d758350a/ansible-role-test.sh
   - chmod +x ${PWD}/tests/test.sh
 
   # Run tests.
