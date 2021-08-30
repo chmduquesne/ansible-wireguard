@@ -35,9 +35,6 @@
     ('in_gw' in wireguard_conf) or
     ('out_gw' in wireguard_conf)
 
-- name: configure firewall
-  include_tasks: "configure_firewall_{{ wireguard_iptable_module }}.yml"
-
 - name: configure unbound records
   include_tasks: configure_unbound_records.yml
   when: wireguard_conf.unbound_records|default(false)

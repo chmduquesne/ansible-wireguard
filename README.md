@@ -17,7 +17,6 @@ Required:
 
 Optional:
 
-* `wireguard_iptable_module` default: `'none'`, accepts: `'iptables'|'iptables_raw'|'none'`. Which ansible module to use for managing the firewall. Leave unchanged if you do not wish for any firewall modification.
 * `wireguard_generate_mobile` default: `False`, accepts a boolean. Whether to generate configurations for hosts that cannot be managed with ansible.
 * `wireguard_mobile_conf_dir` default: `'.'`, accepts a path. **Local** (on the machine running ansible) directory where to generate the mobile hosts configuration.
 * `wireguard_mobile_parameters` default: `{}` accepts a dictionary name: parameters. Parameters used to override the configuration when generatin mobile hosts configuration (e.g. if you want DNS on the mobile hosts, but not on the host you are configuring)
@@ -65,11 +64,6 @@ Optional:
 * `wireguard.{interface}.peers.{peername}.allowedips`, accepts a list of ip ranges. AllowedIPs to use for `{peername}`.
 * `wireguard.{interface}.peers.{peername}.mobile`, default: False, accepts a boolean. Whether to generate a configuration for `{peername}` when `wireguard_generate_mobile` is true.
 
-# Dependencies
-
-This role can optionally use the module `iptables_raw` to do additional
-firewall configuration.
-
 # Example Playbook
 
 Here is an example playbook:
@@ -80,8 +74,6 @@ Here is an example playbook:
 
 Typically, to avoid repeating yourself, you should use the `|combine` filter extensively. For example, you could have the following `group_vars/all/vars.yml`:
 
-    wireguard_iptable_module: "iptables_raw"
-    
     wireguard_default:
       wg0:
         mtu: 1280
