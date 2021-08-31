@@ -113,7 +113,6 @@ Then, for `host_vars/machine0/vars.yml`:
       wg0:
         privkey: "{{ vault_wg0_privkey }}"
         listenport: 500
-        out_gw: enp0s20
         unbound_records: True
         dns: False
     wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
@@ -128,7 +127,6 @@ Then, for `host_vars/machine1/vars.yml`:
     wireguard_override:
       wg0:
         privkey: "{{ vault_wg0_privkey }}"
-        in_gw: wlan0
         dns: False
         # Generate an uint32 from the interface name
         table: "{{ 'wg0'|checksum|truncate(4, end='')|int(base=16) }}"
