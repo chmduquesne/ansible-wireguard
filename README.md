@@ -121,7 +121,6 @@ Then, for `host_vars/machine0/vars.yml`:
     wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
     
     wireguard_generate_mobile: true
-    wireguard_mobile_conf_dir: "wg_configs"
     wireguard_mobile_parameters:
       wg0:
         dns: "{{ wireguard_default.wg0.dns }}"
