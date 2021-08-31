@@ -44,8 +44,6 @@ Optional wireguard variables:
 Convenience variables:
 
 * `wireguard.{interface}.auto_assign_ranges` accepts a list of ip ranges. For each range and for each peer, an ip address is derived from the pubkey within the range, and is assigned as an additional allowedips. For the target host, the generated ip address is appended to `wireguard.{interface}.address`.
-* `wireguard.{interface}.out_gw` accepts an interface name. If `{{ wireguard_iptable_module }}` is not `'none'`, the firewall will be configured to accept forwarding packets from `{interface}` to `wireguard.{interface}.out_gw`.
-* `wireguard.{interface}.in_gw` accepts an interface name. If `{{ wireguard_iptable_module }}` is not `'none'`, the firewall will be configured to accept forwarding packets from `wireguard.{interface}.in_gw` to `{interface}`.
 * `wireguard.{interface}.unbound_records` default: `False`, accepts a bool. If `wireguard.{interface}.auto_assign_ranges` is not empty, dns records will be generated for each peer in a format understood by unbound.
 
 #### Wireguard interface peers

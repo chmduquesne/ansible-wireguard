@@ -9,7 +9,6 @@
       wg0:
         privkey: wLXOaORnRgTiA8aKfQ8CIocJxYu0Mzh+msJ9QCWpEVg=
         listenport: 500
-        out_gw: eth0
         unbound_records: True
         peers:
           localhost:
