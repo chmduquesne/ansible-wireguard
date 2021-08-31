@@ -15,10 +15,16 @@ from nacl.public import PrivateKey, Box
 
 
 def sha256(s):
+    """
+    Computes the sha256 hash of the input string
+    """
     return hashlib.sha256(s.encode()).digest()
 
 
 def wg_pubkey(s):
+    """
+    Computes the wireguard public key corresponding to the input private key
+    """
     encoder = nacl.encoding.Base64Encoder
     key = nacl.public.PrivateKey(s, encoder)
     return to_text(encoder.encode(bytes(key.public_key)))
@@ -93,6 +99,10 @@ def get_pubkey(config):
 
 
 def auto_assign_ips(config):
+    """
+    Automatically assign ip addresses to the configuration, derived from
+    the auto_assign_ranges provided in the configuration
+    """
     # Make a copy of the config that we can safely modify
     c = copy.deepcopy(config)
 
@@ -138,6 +148,9 @@ def keep_keys(d, keys):
 
 
 def first_subnet(subnets, version=4):
+    """
+    Returns the first subnetwork of a list, filtered by version
+    """
     for subnet in subnets:
         network = ipaddress.ip_network(subnet)
         if network.version == version:
@@ -146,6 +159,9 @@ def first_subnet(subnets, version=4):
 
 
 def dns_records(config, hostname, version=4):
+    """
+    Returns dns records for each host of the config
+    """
     res = []
 
     subnet = first_subnet(config.get('auto_assign_ranges', []), version=version)
@@ -166,9 +182,6 @@ def dns_records(config, hostname, version=4):
 
 
 class FilterModule(object):
-    """
-    create a pseudo-random ip address from a string
-    """
 
     def filters(self):
         return {
