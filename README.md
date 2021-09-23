@@ -50,7 +50,7 @@ Convenience variables:
 
 Required:
 
-* `wireguard.{interface}.peers.{peername}.pubkey` accepts a string. Public key to use for `machine0`.
+* `wireguard.{interface}.peers.{peername}.pubkey` accepts a string. Public key to use for `{peername}`.
 
 Optional:
 
