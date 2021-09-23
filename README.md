@@ -52,7 +52,7 @@ Required:
 
 * `wireguard.{interface}.peers.{peername}.pubkey` accepts a string. Public key to use for `{peername}`.
 
-⚠ If an entry has a public key corresponding to `wireguard.{interface}.privkey` is found, it is automatically removed and will not appear in the generated configuration.
+⚠ If an entry has a public key corresponding to `wireguard.{interface}.privkey`, it is automatically removed and will not appear in the generated configuration.
 
 Optional:
 
