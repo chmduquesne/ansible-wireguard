@@ -25,11 +25,11 @@ Optional:
 
 ### Wireguard interface
 
-Required wireguard variables:
+Required:
 
 * `wireguard.{interface}.privkey` accepts a string. Private key to use for the interface.
 
-Optional wireguard variables:
+Optional:
 
 * `wireguard.{interface}.listenport` accepts a port number. Port to use for the interface.
 * `wireguard.{interface}.dns` accepts an ip address or a hostname. DNS server to use for the interface.
@@ -37,7 +37,7 @@ Optional wireguard variables:
 * `wireguard.{interface}.mtu` accepts an int. MTU to use for the interface.
 * `wireguard.{interface}.address` accepts a list of ip addresses. Addresses to assign to the interface.
 
-Convenience variables:
+Convenience:
 
 * `wireguard.{interface}.auto_assign_ranges` accepts a list of ip ranges. For each range and for each peer, an ip address is derived from the pubkey within the range, and is assigned as an additional allowedips. For the target host, the generated ip address is appended to `wireguard.{interface}.address`.
 * `wireguard.{interface}.unbound_records` (default: `False`) accepts a bool. If `wireguard.{interface}.auto_assign_ranges` is not empty, dns records will be generated for each peer in a format understood by unbound.
@@ -46,13 +46,13 @@ Convenience variables:
 
 * `wireguard.{interface}.peers.{peername}` accepts a dictionary as described below. How to configure the peer `{peername}`.
 
-⚠ If an entry has a public key corresponding to `wireguard.{interface}.privkey` is found, it is automatically removed and will not appear in the generated configuration.
-
 #### Wireguard interface peer parameters
 
 Required:
 
 * `wireguard.{interface}.peers.{peername}.pubkey` accepts a string. Public key to use for `{peername}`.
+
+⚠ If an entry has a public key corresponding to `wireguard.{interface}.privkey` is found, it is automatically removed and will not appear in the generated configuration.
 
 Optional:
 
