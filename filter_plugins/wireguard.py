@@ -139,14 +139,6 @@ def auto_assign_ips(config):
     return c
 
 
-def keep_keys(d, keys):
-    """
-    Filter a dictionary by keeping some keys
-    """
-    return {k: v for k, v in d.items() if k in keys}
-
-
-
 def first_subnet(subnets, version=4):
     """
     Returns the first subnetwork of a list, filtered by version
@@ -189,5 +181,4 @@ class FilterModule(object):
             'auto_assign_ips': auto_assign_ips,
             'remove_self': remove_self,
             'dns_records': dns_records,
-            'keep_keys': keep_keys,
         }
