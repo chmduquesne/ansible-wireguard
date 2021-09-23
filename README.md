@@ -11,8 +11,8 @@ Role to manage wireguard configuration
 
 Required:
 
-* `wireguard` accepts a dictionary \{name: parameters\}. How to configure each interface.
-* `wireguard_mobile` (default: `{}`) accepts a dictionary \{name: parameters\}. How to configure peers that are not managed by ansible, interface by interface.
+* `wireguard` accepts a dictionary `{name: parameters}`. How to configure each interface.
+* `wireguard_mobile` (default: `{}`) accepts a dictionary `{name: parameters}`. How to configure peers that are not managed by ansible, interface by interface.
 
 Optional:
 
