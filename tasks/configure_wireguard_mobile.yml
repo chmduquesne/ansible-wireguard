@@ -1,0 +1,20 @@
+---
+
+- name: "Create wireguard mobile directory if necessary"
+  file:
+    path: "{{ wireguard_mobile_conf_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: "create peer configurations"
+  template:
+    src: templates/etc/wireguard/wireguard_interface.conf.j2
+    dest: "{{ wireguard_mobile_conf_dir }}/{{ item.key }}.{{ wireguard_interface }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  vars:
+    - wireguard_conf: "{{ item.value | auto_assign_ips }}"
+  loop: "{{ wireguard_mobile[wireguard_interface] | dict2items }}"

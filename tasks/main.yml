@@ -13,8 +13,15 @@
     group: root
     mode: '0700'
 
-- name: configure networks
+- name: configure interfaces
   include_tasks: configure_wireguard_interface.yml
   with_items: "{{ wireguard.keys()|list|sort }}"
   loop_control:
     loop_var: wireguard_interface
+
+- name: configure mobile hosts
+  include_tasks: configure_wireguard_mobile.yml
+  loop: "{{ wireguard_mobile.keys() | list | sort }}"
+  loop_control:
+    loop_var: wireguard_interface
+  when: wireguard_mobile is defined
