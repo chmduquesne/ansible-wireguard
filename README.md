@@ -39,7 +39,7 @@ Optional:
 
 Convenience:
 
-* `wireguard.{interface}.auto_assign_ranges` accepts a list of ip ranges. For each range and for each peer, an ip address is derived from the pubkey within the range, and is assigned as an additional allowedips. For the target host, the generated ip address is appended to `wireguard.{interface}.address`.
+* `wireguard.{interface}.auto_assign_ranges` accepts a list of ip ranges. For each range and for each peer, an ip address is derived from the pubkey within the range, and is assigned as an additional allowedips. For the target host, the generated ip address is appended to `wireguard.{interface}.address`. The logic of `auto_assign_ranges` replicates and is fully compatible with [wg-ip](https://github.com/chmduquesne/wg-ip).
 * `wireguard.{interface}.unbound_records` (default: `False`) accepts a bool. If `wireguard.{interface}.auto_assign_ranges` is not empty, dns records will be generated for each peer in a format understood by unbound.
 
 #### Wireguard interface peers
