@@ -68,87 +68,86 @@ Optional:
   directory `{{ wireguard_mobile_conf_dir }}`.
 
 
-# Example Playbook
-
-FIXME (outdated)
+# Example playbook
 
 Here is an example playbook:
 
-    - hosts: wireguard
-      roles:
-         - role: chmduquesne.wireguard
+```YAML
+  - hosts: wireguard
+    roles:
+        - role: chmduquesne.wireguard
+```
 
-Typically, to avoid repeating yourself, you should use the `|combine` filter extensively. For example, you could have the following `group_vars/all/vars.yml`:
+We have a central server `server`, a laptop `laptop`, a desktop `desktop`
+which are all managed with ansible. Additionally, we have an android
+cellphone `phone` which is not managed with ansible, but for which we
+still want to generate a configuration on the server.
 
-    wireguard_default:
-      wg0:
-        mtu: 1280
-        dns: "{{ vault_wg0_dns }}"
-        peers:
-          # we use machine0 as an exit gateway
-          machine0:
-            pubkey: "{{ vault_wg0_machine0_pubkey }}"
-            endpoint: "{{ vault_wg0_machine0_endpoint }}"
-            allowedips:
-              - "0.0.0.0/0"
-              - "::/0"
-            persistentkeepalive: 20
-          # machine1 could be an entry gateway
-          machine1:
-            pubkey: "{{ vault_wg0_machine1_pubkey }}"
-            allowedips:
-              - "{{ vault_wg0_machine1_inet6_range }}"
-          # machine2 and machine3 are mobile peers, not configured with ansible
-          machine2:
-            pubkey: "{{ vault_wg0_machine2_pubkey }}"
-            privkey: "{{ vault_wg0_machine2_privkey }}"
-            mobile: true
-          machine3:
-            pubkey: "{{ vault_wg0_machine3_pubkey }}"
-            privkey: "{{ vault_wg0_machine3_privkey }}"
-            mobile: true
-          # machine4 is a regular peer
-          machine4:
-            pubkey: "{{ vault_wg0_machine4_pubkey }}"
-        auto_assign_ips:
-          - 10.0.0.0/8
-          - fd1a:6126:2887::/48
-          - "{{ vault_wg0_global_inet6_range }}"
+We define an auxiliary dictionary in `group_vars/all/vars.yml`, to store
+shared settings:
 
-Then, for `host_vars/machine0/vars.yml`:
+```YAML
+# File group_vars/all/vars.yml
+wireguard_global_settings:
+  wg0:
+    peers:
+      server:
+        pubkey: "{{ vault_wg0_server_pubkey }}"
+        endpoint: "{{ vault_wg0_server_endpoint }}"
+        allowedips:
+          - "0.0.0.0/0"
+          - "::/0"
+        persistentkeepalive: 20
+      laptop:
+        pubkey: "{{ vault_wg0_laptop_pubkey }}"
+      desktop:
+        pubkey: "{{ vault_wg0_desktop_pubkey }}"
+      phone:
+        pubkey: "{{ vault_wg0_phone_pubkey }}"
+    auto_assign_ranges:
+      - 10.0.0.0/8
+      - fd1a:6126:2887::/48
+      - "{{ vault_wg0_global_inet6_range }}"
+    mtu: 1360
+    dns: "{{ vault_wg0_dns }}"
+```
 
-    wireguard_override:
-      wg0:
-        privkey: "{{ vault_wg0_privkey }}"
-        listenport: 500
-        unbound_records: True
-        dns: False
-    wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
-    
-    wireguard_generate_mobile: true
-    wireguard_mobile_parameters:
-      wg0:
-        dns: "{{ wireguard_default.wg0.dns }}"
+The server configuration:
+```YAML
+# File host_vars/server/vars.yml
 
-Then, for `host_vars/machine1/vars.yml`:
+wireguard:
+  wg0:
+    privkey: "{{ vault_wg0_privkey }}"
+    listenport: 500
+    unbound_records: True
+    dns: False
+    peers: "{{ wireguard_global_settings.wg0.peers }}"
+    auto_assign_ranges: "{{ wireguard_global_settings.wg0.auto_assign_ranges }}"
+    mtu: "{{ wireguard_global_settings.wg0.mtu }}"
 
-    wireguard_override:
-      wg0:
-        privkey: "{{ vault_wg0_privkey }}"
-        dns: False
-        # Generate an uint32 from the interface name
-        table: "{{ 'wg0'|checksum|truncate(4, end='')|int(base=16) }}"
-    wireguard: "{{ wireguard_default|combine(wireguard_override, recursive=True) }}"
+wireguard_mobile:
+  wg0:
+    phone:
+      privkey: "{{ vault_wg0_phone_privkey }}"
+      dns: "{{ wireguard_global_settings.wg0.dns }}"
+      peers:
+        server: "{{ wireguard_global_settings.wg0.peers.server }}"
+      auto_assign_ranges: "{{ wireguard_global_settings.wg0.auto_assign_ranges }}"
+```
 
-And for `host_vars/machine4/vars.yml`:
-
-    wireguard_override:
-      wg0:
-        privkey: "{{ vault_wg0_privkey }}"
-    wireguard: "{{ wireguard_default | combine(wireguard_override, recursive=True) }}"
-
-`machine2` and `machine3` are not managed by ansible, and therefore they
-do not require `host_vars` configuration.
+laptop and desktop configurations:
+```YAML
+# Files host_vars/laptop/vars.yml and host_vars/desktop/vars.yml
+wireguard:
+  wg0:
+    privkey: "{{ vault_wg0_privkey }}"
+    peers:
+      server: "{{ wireguard_global_settings.wg0.peers.dedibox }}"
+    auto_assign_ranges: "{{ wireguard_global_settings.wg0.auto_assign_ranges }}"
+    mtu: "{{ wireguard_global_settings.wg0.mtu }}"
+    dns: "{{ wireguard_global_settings.wg0.dns }}"
+```
 
 # License
 
