@@ -88,6 +88,11 @@ shared settings:
 
 ```YAML
 # File group_vars/all/vars.yml
+# - all vault_wg0_ variables would be defined in group_vars/all/vault.yml
+# - all _pubkeys variables are wireguard public keys
+# - vault_wg0_server_endpoint = example.com:8000
+# - vault_wg0_global_inet6_range = 2001:db8:85a3:1::/64
+# - vault_wg0_dns = fd1a:6126:2887::1
 wireguard_global_settings:
   wg0:
     peers:
@@ -115,6 +120,9 @@ wireguard_global_settings:
 The server configuration:
 ```YAML
 # File host_vars/server/vars.yml
+# - all vault_wg0_ variables would be defined in host_vars/server/vault.yml
+# - all _privkey variables are wireguard private keys matching the
+#   respective publi keys
 
 wireguard:
   wg0:
@@ -138,7 +146,9 @@ wireguard_mobile:
 
 laptop and desktop configurations:
 ```YAML
-# Files host_vars/laptop/vars.yml and host_vars/desktop/vars.yml
+# Files host_vars/{laptop,desktop}/vars.yml
+# - vault_wg0_privkey would be defined in host_vars/{laptop,desktop}/vault.yml
+#   and match the respective pubkey from wireguard_global_settings.wg0.peers
 wireguard:
   wg0:
     privkey: "{{ vault_wg0_privkey }}"
