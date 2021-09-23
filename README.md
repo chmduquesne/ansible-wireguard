@@ -33,8 +33,8 @@ Optional wireguard variables:
 
 * `wireguard.{interface}.listenport` accepts a port number. Port to use for the interface.
 * `wireguard.{interface}.dns` accepts an ip address or a hostname. DNS server to use for the interface.
-* `wireguard.{interface}.peers` accepts a peer dictionary formatted as described below. Peer parameters. If an entry has a public key corresponding to `wireguard.{interface}.privkey` is found, it is automatically ignored.
-* `wireguard.{interface}.mtu` accepts an int. MTU to use for the interface
+* `wireguard.{interface}.peers` accepts a peer dictionary formatted as described in section *Wireguard interface peers*. How to configure the peers.
+* `wireguard.{interface}.mtu` accepts an int. MTU to use for the interface.
 * `wireguard.{interface}.address` accepts a list of ip addresses. Addresses to assign to the interface.
 
 Convenience variables:
@@ -45,6 +45,8 @@ Convenience variables:
 #### Wireguard interface peers
 
 * `wireguard.{interface}.peers.{peername}` accepts a dictionary as described below. How to configure the peer `{peername}`.
+
+⚠ If an entry has a public key corresponding to `wireguard.{interface}.privkey` is found, it is automatically removed and will not appear in the generated configuration.
 
 #### Wireguard interface peer parameters
 
