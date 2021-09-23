@@ -1,8 +1,8 @@
 #jinja2: lstrip_blocks: True
 # {{ ansible_managed }}
 
-# Use this configuration on a mobile device:
-# qrencode -o- -tutf8 < {{ wireguard_template_dest | basename }}
+# This file as a qr code:
+# qrencode -o- -tutf8 < {{ template_destpath | basename }}
 
 [Interface]
 PrivateKey = {{ wireguard_conf.privkey }}
