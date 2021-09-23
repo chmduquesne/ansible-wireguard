@@ -16,7 +16,7 @@ Required:
 
 Optional:
 
-* `wireguard_mobile_conf_dir` default: `'.'`, accepts a path. Directory where to optionally generate the mobile hosts configuration.
+* `wireguard_mobile_conf_dir` default: `'/etc/wireguard/mobile'`, accepts a path. Directory where to optionally generate the mobile hosts configuration.
 * `wireguard_unbound_records_dir` default: `'/etc/unbound/records.d'`, accepts a path. Directory where to optionally generate unbound records.
 
 ## Wireguard
