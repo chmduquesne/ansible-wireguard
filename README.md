@@ -12,12 +12,12 @@ Role to manage wireguard configuration
 Required:
 
 * `wireguard` accepts a dictionary \{name: parameters\}. How to configure each interface.
+* `wireguard_mobile` default: `{}` accepts a dictionary \{name: parameters\}. How to configure peers that are not managed by ansible, interface by interface.
 
 Optional:
 
 * `wireguard_mobile_conf_dir` default: `'.'`, accepts a path. Directory where to optionally generate the mobile hosts configuration.
 * `wireguard_unbound_records_dir` default: `'/etc/unbound/records.d'`, accepts a path. Directory where to optionally generate unbound records.
-* `wireguard_mobile` default: `{}` accepts a dictionary \{name: parameters\}. How to configure peers that are not managed by ansible.
 
 ## Wireguard
 
@@ -31,7 +31,6 @@ Required wireguard variables:
 
 Optional wireguard variables:
 
-* `wireguard.{interface}.pubkey` accepts a string. Public key to use for the interface (only useful in combination with `auto_assign_ranges`).
 * `wireguard.{interface}.listenport` accepts a port number. Port to use for the interface.
 * `wireguard.{interface}.dns`, accepts an ip address or a hostname. DNS server to use for the interface.
 * `wireguard.{interface}.peers`, accepts a peer dictionary formatted as described below. Peer parameters. If `{{ inventory_hostname }}` appears in the peers section, it will be skipped.
@@ -45,7 +44,7 @@ Convenience variables:
 
 #### Wireguard interface peers
 
-* `wireguard.{interface}.peers.{peername}`, accepts a dictionary as described below. How to configure the peer `machine0`.
+* `wireguard.{interface}.peers.{peername}`, accepts a dictionary as described below. How to configure the peer `{peername}`.
 
 #### Wireguard interface peer parameters
 
@@ -58,11 +57,20 @@ Optional:
 * `wireguard.{interface}.peers.{peername}.privkey`, accepts a string. (only useful in combination with `wireguard_generate_mobile`) If `{peername}` is mobile, private key to use in the configuration generation. If not provided, a placeholder will be used.
 * `wireguard.{interface}.peers.{peername}.allowedips`, accepts a list of ip ranges. AllowedIPs to use for `{peername}`.
 
-## Wireguard Mobile
+## Wireguard mobile
 
-TODO
+* `wireguard_mobile.{interface}` accepts: a dictionary `{hostname:
+  configuration}`. How to configure hosts that are not managed by ansible
+  for the interface `{interface}`. Each key of this dictionary must be a
+  host name, and each value is a dictionary which follows the same
+  structure as the `wireguard.{interface}` variable. It will be used to
+  expand the same template as for `wireguard.{interface}` in the
+  directory `{{ wireguard_mobile_conf_dir }}`.
+
 
 # Example Playbook
+
+FIXME (outdated)
 
 Here is an example playbook:
 
