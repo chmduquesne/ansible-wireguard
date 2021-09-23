@@ -7,8 +7,6 @@ Role to manage wireguard configuration
 
 # Role Variables
 
-This role has multiple optional features.
-
 ## Top Level
 
 Required:
@@ -17,10 +15,9 @@ Required:
 
 Optional:
 
-* `wireguard_generate_mobile` default: `False`, accepts a boolean. Whether to generate configurations for hosts that cannot be managed with ansible.
-* `wireguard_mobile_conf_dir` default: `'.'`, accepts a path. **Local** (on the machine running ansible) directory where to generate the mobile hosts configuration.
-* `wireguard_mobile_parameters` default: `{}` accepts a dictionary name: parameters. Parameters used to override the configuration when generatin mobile hosts configuration (e.g. if you want DNS on the mobile hosts, but not on the host you are configuring)
+* `wireguard_mobile_conf_dir` default: `'.'`, accepts a path. Directory where to optionally generate the mobile hosts configuration.
 * `wireguard_unbound_records_dir` default: `'/etc/unbound/records.d'`, accepts a path. Directory where to optionally generate unbound records.
+* `wireguard_mobile` default: `{}` accepts a dictionary \{name: parameters\}. How to configure peers that are not managed by ansible.
 
 ## Wireguard
 
@@ -60,7 +57,10 @@ Optional:
 
 * `wireguard.{interface}.peers.{peername}.privkey`, accepts a string. (only useful in combination with `wireguard_generate_mobile`) If `{peername}` is mobile, private key to use in the configuration generation. If not provided, a placeholder will be used.
 * `wireguard.{interface}.peers.{peername}.allowedips`, accepts a list of ip ranges. AllowedIPs to use for `{peername}`.
-* `wireguard.{interface}.peers.{peername}.mobile`, default: False, accepts a boolean. Whether to generate a configuration for `{peername}` when `wireguard_generate_mobile` is true.
+
+## Wireguard Mobile
+
+TODO
 
 # Example Playbook
 
