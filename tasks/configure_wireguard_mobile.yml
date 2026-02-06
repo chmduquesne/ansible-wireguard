@@ -16,5 +16,5 @@
     group: root
     mode: '0644'
   vars:
-    - wireguard_conf: "{{ item.value | auto_assign_ips }}"
+    wireguard_conf: "{{ item.value | auto_assign_ips }}"
   loop: "{{ wireguard_mobile[wireguard_interface] | dict2items }}"

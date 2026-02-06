@@ -11,7 +11,7 @@
     group: root
     mode: 0600
   vars:
-    - wireguard_conf: "{{ wireguard[wireguard_interface] | auto_assign_ips | remove_self }}"
+    wireguard_conf: "{{ wireguard[wireguard_interface] | auto_assign_ips | remove_self }}"
 
 - name: enable wg-quick
   systemd:
@@ -22,4 +22,4 @@
   include_tasks: configure_unbound_records.yml
   when: wireguard_conf.unbound_records|default(false)
   vars:
-    - wireguard_conf: "{{ wireguard[wireguard_interface] | auto_assign_ips | remove_self }}"
+    wireguard_conf: "{{ wireguard[wireguard_interface] | auto_assign_ips | remove_self }}"
